@@ -26,6 +26,8 @@ app = Flask(__name__,
 CORS(app)
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "dataset.csv")
+if not os.path.exists(DATA_PATH):
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "dist", "dataset.csv")
 
 @app.route("/", defaults={"path": ""})
 @app.route("/\u003cpath:path\u003e")
