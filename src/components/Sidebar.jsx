@@ -63,7 +63,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
                     }}>
                         <FolderTree size={20} color="white" />
                     </div>
-                    <h2 style={{ fontSize: '1.1rem', color: 'var(--accent)', whiteSpace: 'nowrap' }}>E-BI Tool</h2>
+                    <h2 style={{ fontSize: '1.1rem', color: 'var(--accent)', whiteSpace: 'nowrap' }}>ECommerce Data Tool</h2>
                 </div>
 
                 <button
