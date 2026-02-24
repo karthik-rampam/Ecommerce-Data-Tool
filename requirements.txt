@@ -1,7 +1,6 @@
 flask
 flask-cors
 pandas
+numpy
 scikit-learn
 mlxtend
-numpy
-gunicorn
