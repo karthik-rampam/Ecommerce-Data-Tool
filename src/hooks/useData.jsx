@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
-export const API_BASE = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : '';
+export const API_BASE = import.meta.env.MODE === 'development'
+    ? 'http://localhost:5000'
+    : (import.meta.env.VITE_API_URL || '');
 
 const DataContext = createContext();
 
