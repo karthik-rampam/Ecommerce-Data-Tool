@@ -8,7 +8,8 @@ import {
     Fingerprint,
     BrainCircuit,
     Box,
-    Menu
+    Menu,
+    Cpu
 } from 'lucide-react';
 
 const Sidebar = ({ isCollapsed, onToggle }) => {
@@ -19,6 +20,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
         { name: 'Association Rules', path: '/association', icon: <Box size={20} /> },
         { name: 'PCA & Features', path: '/pca', icon: <Fingerprint size={20} /> },
         { name: 'Classification', path: '/classification', icon: <BrainCircuit size={20} /> },
+        { name: 'Advanced Analysis', path: '/advanced', icon: <Cpu size={20} /> },
     ];
 
     return (

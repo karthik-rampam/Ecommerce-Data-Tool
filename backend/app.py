@@ -12,6 +12,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import chi2
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.linear_model import LinearRegression
+from sklearn.cluster import KMeans
 
 from mlxtend.frequent_patterns import apriori, fpgrowth, association_rules
 from mlxtend.preprocessing import TransactionEncoder
@@ -432,6 +434,91 @@ def transformation():
         "min_max": min_max.tolist()[:20],
         "z_score": z_score.tolist()[:20],
         "decimal_scaling": decimal_scaling.tolist()[:20]
+    })
+
+# ------------------------------------
+# LINEAR REGRESSION
+# ------------------------------------
+
+@app.route('/api/regression', methods=['GET'])
+def regression():
+    if df_global is None:
+        return jsonify({"error": "No dataset"}), 400
+
+    feature = request.args.get('feature', 'Discount (%)')
+    target = 'Final_Price(Rs.)'
+
+    valid_features = ['Price (Rs.)', 'Discount (%)']
+    if feature not in valid_features:
+        feature = 'Discount (%)'
+
+    df_reg = df_global[[feature, target]].dropna().sample(n=min(300, len(df_global)), random_state=42)
+    X = df_reg[[feature]].values
+    y = df_reg[target].values
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    # Trend line across the range
+    x_line = np.linspace(X.min(), X.max(), 100).reshape(-1, 1)
+    y_line = model.predict(x_line)
+
+    return jsonify({
+        'scatter': [
+            {'x': float(x[0]), 'y': float(yi)} for x, yi in zip(X, y)
+        ],
+        'line': [
+            {'x': float(x[0]), 'y': float(yi)} for x, yi in zip(x_line, y_line)
+        ],
+        'coef': float(model.coef_[0]),
+        'intercept': float(model.intercept_),
+        'r2': float(model.score(X, y)),
+        'feature': feature
+    })
+
+# ------------------------------------
+# K-MEANS CLUSTERING
+# ------------------------------------
+
+@app.route('/api/cluster', methods=['GET'])
+def cluster():
+    if df_global is None:
+        return jsonify({"error": "No dataset"}), 400
+
+    n_clusters = int(request.args.get('n_clusters', 3))
+    n_clusters = max(2, min(n_clusters, 8))  # Clamp between 2 and 8
+
+    features = df_global[['Price (Rs.)', 'Final_Price(Rs.)', 'Discount (%)']].dropna()
+    sample = features.sample(n=min(500, len(features)), random_state=42)
+
+    scaler = StandardScaler()
+    scaled = scaler.fit_transform(sample)
+
+    # PCA to 2D for visualization
+    pca = PCA(n_components=2)
+    coords = pca.fit_transform(scaled)
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    labels = kmeans.fit_predict(scaled)
+
+    points = [
+        {'x': float(coords[i][0]), 'y': float(coords[i][1]), 'cluster': int(labels[i])}
+        for i in range(len(coords))
+    ]
+
+    # Cluster centers in PCA space
+    centers_scaled = kmeans.cluster_centers_
+    centers_pca = pca.transform(centers_scaled)
+    centers = [
+        {'x': float(c[0]), 'y': float(c[1]), 'cluster': int(i)}
+        for i, c in enumerate(centers_pca)
+    ]
+
+    return jsonify({
+        'clusters': points,
+        'centers': centers,
+        'n_clusters': n_clusters,
+        'inertia': float(kmeans.inertia_)
     })
 
 # ------------------------------------

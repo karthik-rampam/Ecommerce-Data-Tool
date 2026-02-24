@@ -8,6 +8,7 @@ import DataTransformation from './pages/DataTransformation';
 import AssociationRules from './pages/AssociationRules';
 import FeatureAnalysis from './pages/FeatureAnalysis';
 import Classification from './pages/Classification';
+import AdvancedAnalysis from './pages/AdvancedAnalysis';
 import { DataProvider, useData } from './hooks/useData';
 
 const AppContent = () => {
@@ -41,6 +42,7 @@ const AppContent = () => {
           <Route path="/association" element={<AssociationRules />} />
           <Route path="/pca" element={<FeatureAnalysis />} />
           <Route path="/classification" element={<Classification />} />
+          <Route path="/advanced" element={<AdvancedAnalysis />} />
         </Routes>
       </main>
     </div>
